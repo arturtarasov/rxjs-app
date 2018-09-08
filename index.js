@@ -1,10 +1,19 @@
-
-var source = Rx.Observable.fromEvent(document.getElementById('input'), 'keyup');
-
-var subscription = source
-    .map(x => x.target.value)
+/*
+Rx.Observable.of([1, 2, 3, 4, 5, 'vfv'], 12, 'string')
     .subscribe(
         (x) => console.log('of: ' + x),
         (error) => console.log('Error: ' + err),
         () => console.log('Completed')
+    );
+*/
+
+Rx.Observable.of('aa', 'bb', 'vv')
+    .map(x => {
+        return {
+            value: x,
+            f: x.length
+        };
+    })
+    .subscribe(
+        (x) => console.log(x.f)
     );
