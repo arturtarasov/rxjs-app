@@ -2,11 +2,10 @@ function getUserById(id) {
     const params = {
         access_token: 'acab1c4d26c4103715a983b69feacb919a8cf51a2ddb4c69b709bbd217c1004f81900130d24299c499754',
         user_ids: id,
-        fields: 'photo_100,online'
+        fields: 'count,photo_100,name_case,status,online'
     };
-
     return $.ajax({
-        url: 'https://api.vk.com/method/users.get?' + $.param(params) + '&v=5.1',
+        url: 'https://api.vk.com/method/friends.search?' + $.param(params) + '&v=5.1',
         type: 'GET',
         dataType: 'JSONP'
     }).promise();
@@ -18,21 +17,23 @@ Rx.Observable.fromEvent($('input'), 'keyup')
     .debounce(2000)
     .mergeMap(v => Rx.Observable.fromPromise(getUserById(v)))
     .catch(error => Rx.Observable.of(error))
-    .map(x => x.response[0])
+    .map(x => x.response)
     .subscribe(
         (user) => {
-            /*var online = user.online ? 'online' : 'offline';
-            $('ul').html(`
-                <li>${user.first_name} ${user.last_name}</li> 
-                <li>id = ${user.id}</li> 
-                <li>status = ${online}</li>
-            `);*/
-            var online = user.online ? 'online' : 'offline';
-            $('a').attr('href','http://vk.com/id' + user.id);
-            $('h4').html(`${user.first_name} ${user.last_name}`);
-            $('p').html(`${online}`);
-            $('img').attr('src', user.photo_100);
-
+            var html = '';
+            for (var i = 0; i < user.count; i++){
+                var data = user.items[i];
+                html += '<li>' +
+                    '<a target="_blank" href="http://vk.com/id' + data.id + '">'
+                        +'<img src="' + data.photo_100 + '">'
+                            +'<div>'
+                                +'<h4>' + data.first_name + ' ' + data.last_name + '</h4>'
+                                +'<button>Написать</button>'
+                            +'</div>'
+                    +'</a'
+                    + '</li>';
+            }
+            $('ul').html(html);
         },
         error => console.log(error),
         () => console.log('Completed')
