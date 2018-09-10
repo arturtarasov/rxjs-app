@@ -2,11 +2,11 @@ function getUserById(id) {
     const params = {
         access_token: '0039a8a0debac447d8c2c165fa7fab325e7826e19b2a0f8806d63bcd2ab32e3d49db6568ca1b51a30730b',
         user_ids: id,
-        fields: 'photo_big'
+        fields: 'photo_big,online'
     };
 
     return $.ajax({
-        url: 'https://api.vk.com/method/users.get?' + $.param(params) + '&v=3.0',
+        url: 'https://api.vk.com/method/users.get?' + $.param(params) + '&v=5.1',
         type: 'GET',
         dataType: 'JSONP'
     }).promise();
@@ -21,7 +21,8 @@ Rx.Observable.fromEvent($('input'), 'keyup')
     .map(x => x.response[0])
     .subscribe(
         (user) => {
-            $('h1').html(`${user.first_name} ${user.last_name} <i>${user.uid}</i>`);
+            var online = user.online ? 'online' : 'offline';
+            $('h1').html(`${user.first_name} ${user.last_name} <i>${user.uid} ${user.online}</i>`);
             $('img').attr('src', user.photo_big);
         },
         error => console.log(error),
