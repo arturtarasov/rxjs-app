@@ -30,7 +30,7 @@ Rx.Observable.fromEvent($('input'), 'keyup')
                                 +'<h4>' + data.first_name + ' ' + data.last_name + '</h4>'
                                 +'<button>Написать</button>'
                             +'</div>'
-                    +'</a'
+                    +'</a>'
                     + '</li>';
             }
             $('ul').html(html);
