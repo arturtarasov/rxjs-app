@@ -20,7 +20,7 @@ Rx.Observable.fromEvent($('input'), 'keyup')
     .pluck('target', 'value')
     .distinct()
     .debounce(2000)
-    .mergeMap(v => Rx.Observable.fromPromise(getMethodVK(v, 'friends.search', {count: 5, fields: 'photo_100,online'})))
+    .mergeMap(v => Rx.Observable.fromPromise(getMethodVK(v, 'friends.search', {count: 8, fields: 'photo_100,online'})))
     .catch(error => Rx.Observable.of(error))
     .map(x => x.response)
     .subscribe(
@@ -33,13 +33,13 @@ Rx.Observable.fromEvent($('input'), 'keyup')
 
 $(document).on('click', '.btn-send', function (event) {
     event.preventDefault();
-    var uid = +$(event.target).data('uid');
-    //var valueTextArea = $(event.target).data('textarea');
-    //console.log(valueTextArea);
-    Rx.Observable.fromPromise(getMethodVK('messages.send', {user_id: 340936561, message: 'Hello'}))
+    var uid = $(event.target).data('uid');
+    var valueTextArea = $('#' + uid).val();
+    console.log(uid + "  " + valueTextArea);
+    Rx.Observable.fromPromise(getMethodVK(uid, 'messages.send', {message: valueTextArea}))
         .distinct()
         .debounce(2000)
-        //.catch(error => Rx.Observable.of(error))
+        .catch(error => Rx.Observable.of(error))
         .map(x => x)
         .subscribe(
             (x) => console.log(x),
@@ -50,21 +50,21 @@ $(document).on('click', '.btn-send', function (event) {
 
 function getList(user) {
     var html = '';
-    console.log(user.items[0]);
-    for (var i = 0; i < user.count; i++){
+    console.log(user.count);
+    for (var i = 0; i < user.count - 1; i++){
         var data = user.items[i];
-        //var online = data.online ? 'online' : 'offline';
+        var online = data.online ? 'online' : 'offline';
         html += '<li>' +
             '<a target="_blank" href="http://vk.com/id' + data.id + '">'
             +'<img src="' + data.photo_100 + '">'
                 +'<div>'
                     +'<h4>' + data.first_name + ' ' + data.last_name + '</h4>'
-                    //+'<p>' + online + '</p>'
+                    +'<p>' + online + '</p>'
 
                 +'</div>'
             +'</a>'
-            +'<textarea data-textarea="'+i+'" rows="7" cols="20"></textarea>'
-            +'<div><button class="btn-send" data-uid="'+data.id+'">Написать</button></div>'
+            +'<textarea id="' + data.id +'" rows="7" cols="20"></textarea>'
+            +'<div><button class="btn-send" data-uid="' + data.id + '">Написать</button></div>'
             + '</li>'
             +'<hr>';
     }
